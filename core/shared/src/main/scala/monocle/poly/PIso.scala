@@ -13,3 +13,11 @@ trait PIso[-A1, +A2, +B1, -B2] extends PLens[A1, A2, B1, B2] with PPrism[A1, A2,
       def reverseGet(to: C2): A2 = self.reverseGet(other.reverseGet(to))
     }
 }
+
+object PIso {
+  def apply[A1, A2, B1, B2](_get: A1 => B1)(_reverseGet: B2 => A2): PIso[A1, A2, B1, B2] =
+    new PIso[A1, A2, B1, B2] {
+      def get(from: A1): B1      = _get(from)
+      def reverseGet(to: B2): A2 = _reverseGet(to)
+    }
+}

@@ -1,5 +1,7 @@
 package monocle.poly
 
+import monocle.function.Field1
+
 trait PLens[-A1, +A2, +B1, -B2] extends Getter[A1, B1] with POptional[A1, A2, B1, B2] { self =>
   def getOrModify(from: A1): Either[A2, B1] = Right(get(from))
 
@@ -20,4 +22,9 @@ object PLens {
       def modify(f: B1 => B2): A1 => A2  = from => set(f(get(from)))(from)
       override def set(to: B2): A1 => A2 = _set(to)
     }
+
+  implicit class MonoLensOps[A, B](optic: Lens[A, B]) {
+    def _1(implicit ev: Field1[B]): Lens[A, ev.B]    = first(ev)
+    def first(implicit ev: Field1[B]): Lens[A, ev.B] = optic.andThen(ev.first.toPoly)
+  }
 }

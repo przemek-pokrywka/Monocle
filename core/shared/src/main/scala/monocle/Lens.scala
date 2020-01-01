@@ -17,6 +17,8 @@ trait Lens[A, B] extends Optional[A, B] with Getter[A, B] { self =>
     override def modify(f: C => C): A => A = self.modify(other.modify(f))
   }
 
+  def toPoly: poly.PLens[A, A, B, B] = poly.PLens[A, A, B, B](get)(set)
+
   ///////////////////////////////////
   // dot syntax for optics typeclass
   ///////////////////////////////////

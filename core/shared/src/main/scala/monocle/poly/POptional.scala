@@ -1,5 +1,7 @@
 package monocle.poly
 
+import monocle.function.Field1
+
 trait POptional[-A1, +A2, +B1, -B2] extends Fold[A1, B1] with PSetter[A1, A2, B1, B2] { self =>
   def getOrModify(from: A1): Either[A2, B1]
   def getOption(from: A1): Option[B1]  = getOrModify(from).toOption
@@ -34,5 +36,10 @@ object POptional {
   implicit class POptionalOptionOps[A1, A2, B1, B2](optic: POptional[A1, A2, Option[B1], Option[B2]]) {
     def some2: POptional[A1, A2, B1, B2] =
       optic.andThenPrism(PPrism.some)
+  }
+
+  implicit class MonoOptionalOps[A, B](optic: Optional[A, B]) {
+    def _1(implicit ev: Field1[B]): Optional[A, ev.B]    = first(ev)
+    def first(implicit ev: Field1[B]): Optional[A, ev.B] = optic.andThen(ev.first.toPoly)
   }
 }
