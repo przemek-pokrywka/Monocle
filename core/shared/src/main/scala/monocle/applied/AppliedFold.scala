@@ -1,7 +1,6 @@
 package monocle.applied
 
-import monocle.function._
-import monocle.{Fold, Prism}
+import monocle.Fold
 
 trait AppliedFold[A, B] {
   def value: A
@@ -12,9 +11,6 @@ trait AppliedFold[A, B] {
 
   def compose[C](other: Fold[B, C]): AppliedFold[A, C] =
     AppliedFold(value, optic.compose(other))
-
-  def asTarget[C](implicit ev: B =:= C): AppliedFold[A, C] =
-    AppliedFold(value, optic.asTarget[C])
 
   def toIterator: Iterator[B] =
     optic.toIterator(value)
@@ -48,41 +44,6 @@ trait AppliedFold[A, B] {
 
   def nonEmpty: Boolean =
     optic.nonEmpty(value)
-
-  ///////////////////////////////////
-  // dot syntax for optics typeclass
-  ///////////////////////////////////
-
-  def _1(implicit ev: Field1[B]): AppliedFold[A, ev.B] = first(ev)
-  def _2(implicit ev: Field2[B]): AppliedFold[A, ev.B] = second(ev)
-  def _3(implicit ev: Field3[B]): AppliedFold[A, ev.B] = third(ev)
-  def _4(implicit ev: Field4[B]): AppliedFold[A, ev.B] = fourth(ev)
-  def _5(implicit ev: Field5[B]): AppliedFold[A, ev.B] = fifth(ev)
-  def _6(implicit ev: Field6[B]): AppliedFold[A, ev.B] = sixth(ev)
-
-  def first(implicit ev: Field1[B]): AppliedFold[A, ev.B]  = compose(ev.first)
-  def second(implicit ev: Field2[B]): AppliedFold[A, ev.B] = compose(ev.second)
-  def third(implicit ev: Field3[B]): AppliedFold[A, ev.B]  = compose(ev.third)
-  def fourth(implicit ev: Field4[B]): AppliedFold[A, ev.B] = compose(ev.fourth)
-  def fifth(implicit ev: Field5[B]): AppliedFold[A, ev.B]  = compose(ev.fifth)
-  def sixth(implicit ev: Field6[B]): AppliedFold[A, ev.B]  = compose(ev.sixth)
-
-  def at[I, C](i: I)(implicit ev: At.Aux[B, I, C]): AppliedFold[A, Option[C]] = compose(ev.at(i))
-  def cons(implicit ev: Cons[B]): AppliedFold[A, (ev.B, B)]                   = compose(ev.cons)
-  def headOption(implicit ev: Cons[B]): AppliedFold[A, ev.B]                  = compose(ev.headOption)
-  def tailOption(implicit ev: Cons[B]): AppliedFold[A, B]                     = compose(ev.tailOption)
-  def index[I, C](i: I)(implicit ev: Index.Aux[B, I, C]): AppliedFold[A, C]   = compose(ev.index(i))
-  def possible(implicit ev: Possible[B]): AppliedFold[A, ev.B]                = compose(ev.possible)
-  def reverse(implicit ev: Reverse[B]): AppliedFold[A, ev.B]                  = compose(ev.reverse)
-
-  ///////////////////////////////////
-  // dot syntax for standard types
-  ///////////////////////////////////
-
-  def left[E, C](implicit ev: B =:= Either[E, C]): AppliedFold[A, E] = asTarget[Either[E, C]].compose(Prism.left[E, C])
-  def right[E, C](implicit ev: B =:= Either[E, C]): AppliedFold[A, C] =
-    asTarget[Either[E, C]].compose(Prism.right[E, C])
-  def some[C](implicit ev: B =:= Option[C]): AppliedFold[A, C] = asTarget[Option[C]].compose(Prism.some[C])
 }
 
 object AppliedFold {

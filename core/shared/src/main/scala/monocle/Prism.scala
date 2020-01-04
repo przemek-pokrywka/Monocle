@@ -12,41 +12,20 @@ trait Prism[+E, A, B] extends Optional[E, A, B] { self =>
 
   override def set(to: B): A => A = _ => reverseGet(to)
 
-  override def asTarget[C](implicit ev: B =:= C): Prism[E, A, C] =
-    asInstanceOf[Prism[E, A, C]]
-
   def compose[E1 >: E, C](other: Prism[E1, B, C]): Prism[E1, A, C] = new Prism[E1, A, C] {
     def getEither(from: A): Either[E1, C]      = self.getEither(from).flatMap(other.getEither)
     def reverseGet(to: C): A                   = self.reverseGet(other.reverseGet(to))
     override def getOption(from: A): Option[C] = self.getOption(from).flatMap(other.getOption)
   }
 
-  def mapError[E1](f: E => E1): Prism[E1, A, B] =
+  override def mapError[E1](f: E => E1): Prism[E1, A, B] =
     new Prism[E1, A, B] {
       def getEither(from: A): Either[E1, B] = self.getEither(from).left.map(f)
       def reverseGet(to: B): A              = self.reverseGet(to)
     }
 
-  def withError[E1](error: E1): Prism[E1, A, B] =
+  override def withError[E1](error: E1): Prism[E1, A, B] =
     mapError(_ => error)
-
-  ///////////////////////////////////
-  // dot syntax for optics typeclass
-  ///////////////////////////////////
-
-  override def cons(implicit ev: Cons[B]): Prism[E, A, (ev.B, B)]  = compose(ev.cons)
-  override def reverse(implicit ev: Reverse[B]): Prism[E, A, ev.B] = compose(ev.reverse)
-
-  ///////////////////////////////////
-  // dot syntax for standard types
-  ///////////////////////////////////
-
-  override def left[X, C](implicit ev: B =:= Either[E, C]): Prism[E, A, E] =
-    asTarget[Either[X, C]].composePrism(Prism.left)
-  override def right[X, C](implicit ev: B =:= Either[E, C]): Prism[E, A, C] =
-    asTarget[Either[X, C]].composePrism(Prism.right)
-  override def some[C](implicit ev: B =:= Option[C]): Prism[E, A, C] =
-    asTarget[Option[C]].composePrism(Prism.some)
 
 }
 

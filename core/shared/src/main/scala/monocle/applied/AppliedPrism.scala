@@ -1,40 +1,19 @@
 package monocle.applied
 
 import monocle.Prism
-import monocle.function._
 
 trait AppliedPrism[+E, A, B] extends AppliedOptional[E, A, B] {
   def value: A
   def optic: Prism[E, A, B]
 
-  def compose[C](other: Prism[B, C]): AppliedPrism[A, C] =
+  def compose[E1 >: E, C](other: Prism[E1, B, C]): AppliedPrism[E1, A, C] =
     AppliedPrism(value, optic.compose(other))
-
-  override def asTarget[C](implicit ev: B =:= C): AppliedPrism[A, C] =
-    AppliedPrism(value, optic.asTarget[C])
-
-  ///////////////////////////////////
-  // dot syntax for optics typeclass
-  ///////////////////////////////////
-
-  override def cons(implicit ev: Cons[B]): AppliedPrism[A, (ev.B, B)]  = compose(ev.cons)
-  override def reverse(implicit ev: Reverse[B]): AppliedPrism[A, ev.B] = compose(ev.reverse)
-
-  ///////////////////////////////////
-  // dot syntax for standard types
-  ///////////////////////////////////
-
-  override def left[E, C](implicit ev: B =:= Either[E, C]): AppliedPrism[A, E] =
-    asTarget[Either[E, C]].compose(Prism.left[E, C])
-  override def right[E, C](implicit ev: B =:= Either[E, C]): AppliedPrism[A, C] =
-    asTarget[Either[E, C]].compose(Prism.right[E, C])
-  override def some[C](implicit ev: B =:= Option[C]): AppliedPrism[A, C] = asTarget[Option[C]].compose(Prism.some[C])
 }
 
 object AppliedPrism {
-  def apply[A, B](_value: A, _optic: Prism[A, B]): AppliedPrism[A, B] =
-    new AppliedPrism[A, B] {
-      def value: A           = _value
-      def optic: Prism[A, B] = _optic
+  def apply[E, A, B](_value: A, _optic: Prism[E, A, B]): AppliedPrism[E, A, B] =
+    new AppliedPrism[E, A, B] {
+      def value: A              = _value
+      def optic: Prism[E, A, B] = _optic
     }
 }

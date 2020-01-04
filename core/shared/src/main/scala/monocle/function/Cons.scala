@@ -7,8 +7,8 @@ trait Cons[A] {
 
   def cons: UPrism[A, (B, A)]
 
-  def headOption: UOptional[A, B] = cons composeLens Lens.first
-  def tailOption: UOptional[A, A] = cons composeLens Lens.second
+  def headOption: UOptional[A, B] = cons compose Lens.first[(B, A), B]
+  def tailOption: UOptional[A, A] = cons compose Lens.second[(B, A), A]
 }
 
 object Cons {

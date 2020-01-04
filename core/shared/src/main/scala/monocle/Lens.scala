@@ -8,42 +8,15 @@ trait Lens[A, B] extends Optional[Nothing, A, B] with Getter[A, B] { self =>
 
   override def getOption(from: A): Option[B] = Some(get(from))
 
-  override def _modifyE[E1 >: Nothing](f: B => Either[E1, B]): A => Either[E1, A] =
-    from => f(get(from)).map(set(_)(from))
-
   override def modifyE(f: B => B): A => Either[Nothing, A] = from => Right(modify(f)(from))
 
   override def modify(f: B => B): A => A = from => set(f(get(from)))(from)
-
-  override def asTarget[C](implicit ev: B =:= C): Lens[A, C] =
-    asInstanceOf[Lens[A, C]]
 
   def compose[C](other: Lens[B, C]): Lens[A, C] = new Lens[A, C] {
     def get(from: A): C                    = other.get(self.get(from))
     override def set(to: C): A => A        = self.modify(other.set(to))
     override def modify(f: C => C): A => A = self.modify(other.modify(f))
   }
-
-  ///////////////////////////////////
-  // dot syntax for optics typeclass
-  ///////////////////////////////////
-
-  override def _1(implicit ev: Field1[B]): Lens[A, ev.B] = first(ev)
-  override def _2(implicit ev: Field2[B]): Lens[A, ev.B] = second(ev)
-  override def _3(implicit ev: Field3[B]): Lens[A, ev.B] = third(ev)
-  override def _4(implicit ev: Field4[B]): Lens[A, ev.B] = fourth(ev)
-  override def _5(implicit ev: Field5[B]): Lens[A, ev.B] = fifth(ev)
-  override def _6(implicit ev: Field6[B]): Lens[A, ev.B] = sixth(ev)
-
-  override def first(implicit ev: Field1[B]): Lens[A, ev.B]  = compose(ev.first)
-  override def second(implicit ev: Field2[B]): Lens[A, ev.B] = compose(ev.second)
-  override def third(implicit ev: Field3[B]): Lens[A, ev.B]  = compose(ev.third)
-  override def fourth(implicit ev: Field4[B]): Lens[A, ev.B] = compose(ev.fourth)
-  override def fifth(implicit ev: Field5[B]): Lens[A, ev.B]  = compose(ev.fifth)
-  override def sixth(implicit ev: Field6[B]): Lens[A, ev.B]  = compose(ev.sixth)
-
-  override def at[I, C](i: I)(implicit ev: At.Aux[B, I, C]): Lens[A, Option[C]] = compose(ev.at(i))
-  override def reverse(implicit ev: Reverse[B]): Lens[A, ev.B]                  = compose(ev.reverse)
 }
 
 object Lens {

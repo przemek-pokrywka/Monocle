@@ -13,10 +13,10 @@ trait AppliedSyntax {
     def optic[B](lens: Lens[A, B]): AppliedLens[A, B] =
       AppliedLens(value, lens)
 
-    def optic[B](prism: Prism[A, B]): AppliedPrism[A, B] =
+    def optic[E, B](prism: Prism[E, A, B]): AppliedPrism[E, A, B] =
       AppliedPrism(value, prism)
 
-    def optic[B](optional: Optional[A, B]): AppliedOptional[A, B] =
+    def optic[E, B](optional: Optional[E, A, B]): AppliedOptional[E, A, B] =
       AppliedOptional(value, optional)
 
     def optic[B](getter: Getter[A, B]): AppliedGetter[A, B] =

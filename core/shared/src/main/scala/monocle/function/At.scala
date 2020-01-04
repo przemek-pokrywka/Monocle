@@ -6,7 +6,7 @@ trait At[A] extends Index[A] {
   def at(index: I): Lens[A, Option[B]]
 
   def index(index: I): UOptional[A, B] =
-    at(index) composePrism UPrism.some
+    at(index) compose UPrism.some[B]
 }
 
 object At {

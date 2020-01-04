@@ -1,6 +1,6 @@
 package monocle.function
 
-import monocle.{Optional, UOptional}
+import monocle.UOptional
 
 import scala.util.Try
 
@@ -25,18 +25,18 @@ object Index {
     apply(
       (i: Int) =>
         if (i < 0)
-          Optional.void
+          UOptional.void
         else
-          Optional[List[A], A](xs => Try(xs(i)).toOption)((xs, a) => Try(xs.updated(i, a)).getOrElse(xs))
+          UOptional[List[A], A](xs => Try(xs(i)).toOption)((xs, a) => Try(xs.updated(i, a)).getOrElse(xs))
     )
 
   implicit def vector[A]: Aux[Vector[A], Int, A] =
     apply(
       (i: Int) =>
         if (i < 0)
-          Optional.void
+          UOptional.void
         else
-          Optional[Vector[A], A](xs => Try(xs(i)).toOption)((xs, a) => Try(xs.updated(i, a)).getOrElse(xs))
+          UOptional[Vector[A], A](xs => Try(xs(i)).toOption)((xs, a) => Try(xs.updated(i, a)).getOrElse(xs))
     )
 
   implicit def map[K, V]: Aux[Map[K, V], K, V] = At.map
