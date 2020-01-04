@@ -3,9 +3,9 @@ package monocle.applied
 import monocle.{Optional, Prism}
 import monocle.function._
 
-trait AppliedOptional[A, B] extends AppliedFold[A, B] with AppliedSetter[A, B] {
+trait AppliedOptional[+E, A, B] extends AppliedFold[A, B] with AppliedSetter[A, B] {
   def value: A
-  def optic: Optional[A, B]
+  def optic: Optional[E, A, B]
 
   def getOption: Option[B] =
     optic.getOption(value)

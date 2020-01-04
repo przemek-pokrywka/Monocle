@@ -3,15 +3,16 @@ package monocle
 import monocle.function._
 
 trait Setter[A, B] { self =>
-  def set(to: B): A => A
-
   def modify(f: B => B): A => A
+
+  def set(to: B): A => A = modify(_ => to)
 
   def compose[C](other: Setter[B, C]): Setter[A, C] =
     new Setter[A, C] {
-      def set(to: C): A => A        = self.modify(other.set(to))
       def modify(f: C => C): A => A = self.modify(other.modify(f))
     }
+
+  def composePrism[E, C](other: Prism[E, B, C]): Setter[A, C] = compose(other)
 
   def asTarget[C](implicit ev: B =:= C): Setter[A, C] =
     asInstanceOf[Setter[A, C]]
@@ -46,14 +47,13 @@ trait Setter[A, B] { self =>
   // dot syntax for standard types
   ///////////////////////////////////
 
-  def left[E, C](implicit ev: B =:= Either[E, C]): Setter[A, E]  = asTarget[Either[E, C]].compose(Prism.left[E, C])
-  def right[E, C](implicit ev: B =:= Either[E, C]): Setter[A, C] = asTarget[Either[E, C]].compose(Prism.right[E, C])
-  def some[C](implicit ev: B =:= Option[C]): Setter[A, C]        = asTarget[Option[C]].compose(Prism.some[C])
+  def left[E, C](implicit ev: B =:= Either[E, C]): Setter[A, E]  = asTarget[Either[E, C]].composePrism(Prism.left)
+  def right[E, C](implicit ev: B =:= Either[E, C]): Setter[A, C] = asTarget[Either[E, C]].composePrism(Prism.right)
+  def some[C](implicit ev: B =:= Option[C]): Setter[A, C]        = asTarget[Option[C]].composePrism(Prism.some)
 }
 
 object Setter {
   def apply[A, B](_modify: (B => B) => (A => A)): Setter[A, B] = new Setter[A, B] {
-    def set(to: B): A => A        = modify(_ => to)
     def modify(f: B => B): A => A = _modify(f)
   }
 }

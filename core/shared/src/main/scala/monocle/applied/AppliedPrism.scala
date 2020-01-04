@@ -3,9 +3,9 @@ package monocle.applied
 import monocle.Prism
 import monocle.function._
 
-trait AppliedPrism[A, B] extends AppliedOptional[A, B] {
+trait AppliedPrism[+E, A, B] extends AppliedOptional[E, A, B] {
   def value: A
-  def optic: Prism[A, B]
+  def optic: Prism[E, A, B]
 
   def compose[C](other: Prism[B, C]): AppliedPrism[A, C] =
     AppliedPrism(value, optic.compose(other))

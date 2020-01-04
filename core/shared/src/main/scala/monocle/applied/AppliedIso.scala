@@ -3,7 +3,7 @@ package monocle.applied
 import monocle.function._
 import monocle.{Iso, Prism}
 
-trait AppliedIso[A, B] extends AppliedLens[A, B] with AppliedPrism[A, B] {
+trait AppliedIso[A, B] extends AppliedLens[A, B] with AppliedPrism[Nothing, A, B] {
   def value: A
   def optic: Iso[A, B]
 

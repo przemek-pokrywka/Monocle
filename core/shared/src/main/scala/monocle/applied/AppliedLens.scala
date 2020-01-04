@@ -3,7 +3,7 @@ package monocle.applied
 import monocle.Lens
 import monocle.function._
 
-trait AppliedLens[A, B] extends AppliedOptional[A, B] with AppliedGetter[A, B] {
+trait AppliedLens[A, B] extends AppliedOptional[Nothing, A, B] with AppliedGetter[A, B] {
   def value: A
   def optic: Lens[A, B]
 

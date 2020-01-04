@@ -1,21 +1,21 @@
 package monocle.function
 
-import monocle.{Optional, Prism}
+import monocle.{UOptional, UPrism}
 
 trait Possible[A] {
   type B
 
-  def possible: Optional[A, B]
+  def possible: UOptional[A, B]
 }
 
 object Possible {
   type Aux[A, B0] = Possible[A] { type B = B0 }
 
-  def apply[A, B0](optional: Optional[A, B0]): Aux[A, B0] = new Possible[A] {
+  def apply[A, B0](optional: UOptional[A, B0]): Aux[A, B0] = new Possible[A] {
     type B = B0
-    override val possible: Optional[A, B0] = optional
+    override val possible: UOptional[A, B0] = optional
   }
 
   implicit def optionPossible[A]: Aux[Option[A], A] =
-    apply(Prism.some)
+    apply(UPrism.some)
 }

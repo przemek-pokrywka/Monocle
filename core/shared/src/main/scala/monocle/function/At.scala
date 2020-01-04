@@ -1,13 +1,12 @@
 package monocle.function
 
-import monocle.{Lens, Optional}
-import monocle.Prism.some
+import monocle.{Lens, UOptional, UPrism}
 
 trait At[A] extends Index[A] {
   def at(index: I): Lens[A, Option[B]]
 
-  def index(index: I): Optional[A, B] =
-    at(index) composePrism some
+  def index(index: I): UOptional[A, B] =
+    at(index) composePrism UPrism.some
 }
 
 object At {
@@ -28,8 +27,8 @@ object At {
             optA match {
               case None    => map - key
               case Some(a) => map + (key -> a)
-            }
-        )
+          }
+      )
     )
 
   implicit def set[A]: Aux[Set[A], A, Unit] =
@@ -38,6 +37,6 @@ object At {
         Lens[Set[A], Option[Unit]](set => if (set.contains(key)) Some(()) else None) {
           case (set, None)    => set - key
           case (set, Some(_)) => set + key
-        }
+      }
     )
 }
