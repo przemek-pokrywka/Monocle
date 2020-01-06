@@ -10,6 +10,9 @@ trait AppliedIso[A, B] extends AppliedLens[A, B] with AppliedPrism[A, B] {
   final def compose[C](other: Iso[B, C]): AppliedIso[A, C] =
     AppliedIso(value, optic.compose(other))
 
+  def composePrism[C](other: Prism[B, C]): AppliedPrism[A, C] =
+    AppliedPrism(value, optic.compose(other))
+
   override def asTarget[C](implicit ev: B =:= C): AppliedIso[A, C] =
     AppliedIso(value, optic.asTarget[C])
 

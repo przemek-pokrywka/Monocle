@@ -20,4 +20,6 @@ object PIso {
       def get(from: A1): B1      = _get(from)
       def reverseGet(to: B2): A2 = _reverseGet(to)
     }
+
+  def id[A, B]: PIso[A, B, A, B] = apply[A, B, A, B](identity)(identity)
 }

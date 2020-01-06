@@ -1,6 +1,6 @@
 package monocle.applied
 
-import monocle.Prism
+import monocle.{Iso, Prism}
 import monocle.function._
 
 trait AppliedPrism[A, B] extends AppliedOptional[A, B] {
@@ -8,6 +8,9 @@ trait AppliedPrism[A, B] extends AppliedOptional[A, B] {
   def optic: Prism[A, B]
 
   def compose[C](other: Prism[B, C]): AppliedPrism[A, C] =
+    AppliedPrism(value, optic.compose(other))
+
+  def composeIso[C](other: Iso[B, C]): AppliedPrism[A, C] =
     AppliedPrism(value, optic.compose(other))
 
   override def asTarget[C](implicit ev: B =:= C): AppliedPrism[A, C] =

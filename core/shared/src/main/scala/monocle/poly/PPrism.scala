@@ -13,6 +13,8 @@ trait PPrism[-A1, +A2, +B1, -B2] extends POptional[A1, A2, B1, B2] { self =>
       def getOrModify(from: A1): Either[A2, C1] =
         self.getOrModify(from).flatMap(other.getOrModify(_).left.map(self.set(_)(from)))
     }
+
+  def andThenIso[C1, C2](other: PIso[B1, B2, C1, C2]): PPrism[A1, A2, C1, C2] = andThen(other)
 }
 
 object PPrism {

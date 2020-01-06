@@ -17,6 +17,8 @@ trait Prism[A, B] extends Optional[A, B] { self =>
     def reverseGet(to: C): A          = self.reverseGet(other.reverseGet(to))
   }
 
+  def composeIso[C](other: Iso[B, C]): Prism[A, C] = compose(other)
+
   ///////////////////////////////////
   // dot syntax for optics typeclass
   ///////////////////////////////////
