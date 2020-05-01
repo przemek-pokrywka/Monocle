@@ -130,6 +130,7 @@ lazy val monocleJVM = project.in(file(".monocleJVM"))
 
 lazy val monocleJS = project.in(file(".monocleJS"))
   .settings(monocleJsSettings)
+  .settings(noPublishSettings)
   .aggregate(coreJS, genericJS, lawJS, macrosJS, stateJS, refinedJS, unsafeJS, testJS)
   .dependsOn(coreJS, genericJS, lawJS, macrosJS, stateJS, refinedJS, unsafeJS, testJS  % "test-internal -> test")
 
